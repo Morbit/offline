@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <title>Basic BackgroundSync Example</title>
+ </head>
+ <body>
+   <div id="connectionStatus">Вы offline. Запросы будут синхронизированы после подключения к сети</div>
+   <p>Нажмите на кнопку, чтобы отправить HTTP запрос.<p>
+   <button id="requestButton">Отправить</button>
+	<script>
+  // Connection Status
+  function isOnline() {
+    var connectionStatus = document.getElementById('connectionStatus');
+
+    if (navigator.onLine){
+      connectionStatus.innerHTML = 'Вы online!';
+    }
+    else{
+      connectionStatus.innerHTML = 'Вы offline. Запросы будут синхронизированы после подключения к сети';
+    }
+  }
+
+  window.addEventListener('online', isOnline);
+  window.addEventListener('offline', isOnline);
+  isOnline();
+
+    if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./service-worker.js').then((registration) => {
+          return navigator.serviceWorker.ready;
+        }).then((registration) => {
+          // регистрация sync
+          document.getElementById('requestButton').addEventListener('click', () => {
+            registration.sync.register('image-fetch').then(() => {
+              console.log('Событие sync зарегистрировано');
+            }).catch(function(error){
+              console.log('Не удалось получить картинку.');
+            });
+          });
+        }).catch(function(error){
+          console.log('Не удалось зарегистрировать Service Worker.');
+        });
+    }
+    else{
+      console.log('Функциональность Service Worker не поддерживается вашим браузером.');
+    }
+
+	</script>
+  </body>
+</html>
